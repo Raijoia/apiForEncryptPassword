@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { comparetor, encryptPassword } from 'src/utils/encrypt';
@@ -24,13 +24,18 @@ export class UserService {
     });
 
     if (!userLogin) {
-      return { message: 'User not found' };
+      throw new NotFoundException('User not found');
     }
 
-    return await comparetor(
+    const isPasswordValid = await comparetor(
       data.password.toString(),
       userLogin.password,
-      userLogin,
     );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    return userLogin;
   }
 }
