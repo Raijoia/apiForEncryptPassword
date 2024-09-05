@@ -8,6 +8,10 @@ import { ErrorResponse } from 'src/interface/errorResponse';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  async getAllUsers(): Promise<User[]> {
+    return this.prisma.user.findMany();
+  }
+
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     const haveUser = await this.prisma.user.findUnique({
       where: { email: data.email.toString() },

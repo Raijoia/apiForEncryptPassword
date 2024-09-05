@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
 import { CreateUserDto } from 'src/dto/create-user.dto';
@@ -7,6 +7,11 @@ import { LoginUserDto } from 'src/dto/login-user.dto';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('all')
+  async getAllUsers() {
+    return await this.userService.getAllUsers();
+  }
 
   @Post('login')
   async login(@Body(new ValidationPipe()) loginUserDto: LoginUserDto) {
