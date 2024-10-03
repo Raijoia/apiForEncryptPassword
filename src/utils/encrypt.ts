@@ -3,7 +3,7 @@ import type { User } from '@prisma/client';
 export function encryptPassword(password: string): Promise<string> {
   const passwordString = password.toString();
 
-  const cleanText = passwordString.replace(/[^a-zA-Z0-9]/g, '');
+  const cleanText = passwordString.replace(/[^a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/g, '');
 
   const rows = Math.ceil(cleanText.length / 4);
 
