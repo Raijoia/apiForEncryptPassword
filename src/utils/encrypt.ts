@@ -3,9 +3,17 @@ import type { User } from '@prisma/client';
 export function encryptPassword(password: string): Promise<string> {
   const passwordString = password.toString();
 
-  const cleanText = passwordString.replace(/[^a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/g, '');
+  const cleanText = passwordString.replace(
+    // eslint-disable-next-line no-useless-escape
+    /[^a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]/g,
+    '',
+  );
 
-  const rows = Math.ceil(cleanText.length / 4);
+  const transformedText = Array.from(cleanText)
+    .map((char) => String.fromCharCode(char.charCodeAt(0) + 4))
+    .join('');
+
+  const rows = Math.ceil(transformedText.length / 4);
 
   const matrix: string[][] = [];
 
@@ -13,7 +21,7 @@ export function encryptPassword(password: string): Promise<string> {
   for (let r = 0; r < rows; r++) {
     matrix[r] = [];
     for (let c = 0; c < 4; c++) {
-      matrix[r][c] = cleanText[currentIndex] || ' ';
+      matrix[r][c] = transformedText[currentIndex] || ' ';
       currentIndex++;
     }
   }
@@ -25,6 +33,7 @@ export function encryptPassword(password: string): Promise<string> {
     }
   }
 
+  // biome-ignore lint/style/useTemplate: <explanation>
   console.log('senha ' + encryptedText);
 
   return Promise.resolve(encryptedText);
